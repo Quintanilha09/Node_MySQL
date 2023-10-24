@@ -1,3 +1,4 @@
+const { response } = require("express")
 const express = require("express")
 const exphbs = require("express-handlebars")
 const mysql = require("mysql2")
@@ -18,9 +19,32 @@ app.use(express.urlencoded({
 
 app.use(express.json())
 
+app.get("/register", (request, response) =>{
+    response.render("register")
+})
+
 //rotas
-app.get('/', (req, res) => {
-    res.render("home")
+
+app.post("/register/save", (request, response) => {
+    const {title, pageqty} = request.body
+
+    const query = `
+    INSERT INTO book (title, pageqty) 
+    VALUES ('${title}', '${pageqty}')
+    `
+
+    conn.query(query, (error) => {
+        if (error) {
+            console.log(error)
+            return
+        }
+
+        response.redirect("/")
+    })
+})
+
+app.get("/", (request, response) => {
+    response.render("home")
 })
 
 //conectando com mysql
@@ -29,7 +53,7 @@ const conn = mysql.createConnection({
     user: "root",
     password: "root",
     database: "nodemysql",
-    port: 3307
+    port: 3306
 })
 
 conn.connect((error) => {
