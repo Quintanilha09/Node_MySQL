@@ -21,10 +21,6 @@ app.use(express.urlencoded({
 
 app.use(express.json())
 
-app.get("/register", (request, response) =>{
-    response.render("register")
-})
-
 //rotas
 
 app.post("/register/save", (request, response) => {
@@ -43,6 +39,28 @@ app.post("/register/save", (request, response) => {
 
         response.redirect("/")
     })
+})
+
+app.get("/book/:id_book", (request, response) => {
+    const id = request.params.id_book
+
+    const sql = `
+        SELECT * FROM book
+        WHERE id_book=${id}
+    `
+    conn.query(sql, (error, data) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        const book = data[0]
+
+        response.render("book", {book})
+    })
+})
+
+app.get("/register", (request, response) =>{
+    response.render("register")
 })
 
 app.get("/", (request, response) => {
