@@ -1,4 +1,4 @@
-const { response } = require("express")
+const { response, request } = require("express")
 const express = require("express")
 const exphbs = require("express-handlebars")
 const mysql = require("mysql2")
@@ -23,6 +23,24 @@ app.use(express.json())
 
 //rotas
 
+app.post("/edit/save", (request, response) => {
+    const {id, title, pageqty} = request.body
+
+    const sql = `
+        UPDATE book
+        SET title = '${title}', pageqty = '${pageqty}'
+        WHERE id_book = ${id}
+    `
+
+    conn.query(sql, (error) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        response.redirect("/")
+    })
+})
+
 app.post("/register/save", (request, response) => {
     const {title, pageqty} = request.body
 
@@ -38,6 +56,24 @@ app.post("/register/save", (request, response) => {
         }
 
         response.redirect("/")
+    })
+})
+
+app.get("/edit/:id_book", (request, response) => {
+    const id = request.params.id_book
+
+    const sql = `
+        SELECT * FROM book
+        WHERE id_book = ${id}
+    `
+
+    conn.query(sql, (error, data) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        const book = data[0]
+        response.render('edit', {book})
     })
 })
 
