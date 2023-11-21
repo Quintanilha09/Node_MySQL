@@ -23,6 +23,23 @@ app.use(express.json())
 
 //rotas
 
+app.post("/delete", (request, response) => {
+    const {id} = request.body
+
+    const sql = `
+        DELETE FROM book
+        WHERE id_book = ${id}
+    `
+    conn.query(sql, (error) =>{
+        if (error) {
+            return console.log(error)
+        }
+
+        response.redirect("/")
+    })
+
+})
+
 app.post("/edit/save", (request, response) => {
     const {id, title, pageqty} = request.body
 
